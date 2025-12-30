@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+    <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  
+  <title>Frontend Mentor | QR code component</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'slate-300': 'hsl(212, 45%, 89%)',
+            'slate-500': 'hsl(216, 15%, 48%)',
+            'slate-900': 'hsl(218, 44%, 22%)',
+          },
+          fontFamily:{
+            'outfit': ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-300 min-h-screen flex items-center justify-center font-outfit p-4">
+  <div class="bg-white rounded-2xl p-4 max-w-xs shadow-xl w-72">
+    <img 
+      src="images/image-qr-code.png"
+      class="w-full rounded-xl mb-6" 
+    >
+
+    <h1 class="text-slate-900 font-bold text-xl mb-4 text-center px-2">
+      Improve your front-end skill bg building projects
+    </h1>
+    <p class="text-slate-500 text-[15px] text-center mb-6">
+      Scan the QR code to visit Frontend Mentor and take your coding skills to the next level
+    </p>
+  </div>
+</body>
+</html>
