@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Frontend Mentor | Blog preview card</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "badge-yellow": "hsl(47, 88%, 63%)",
+              "gray-500": "hsl(0, 0%, 42%)",
+              "Gray 950": "hsl(0, 0%, 7%)",
+            },
+            fontFamily: {
+              figtree: ["Figtree", "sans-serif"],
+            },
+            boxShadow: {
+              card: "10px 10px 1px hsl(0, 0%, 7%)",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-badge-yellow min-h-screen flex items-center justify-center font-figtree p-4"
+  >
+    <div class="w-72">
+      <div class="bg-white rounded-2xl p-4 max-w-xs shadow-card">
+        <img
+          src="assets/images/illustration-article.svg"
+          class="w-full rounded-xl mb-6"
+        />
+
+        <!-- <span class="inline-block bg-yellow-400 text-black text-xs font-semibold px-2 py-1 rounded"></span> -->
+        <div class="font-card mb-6">
+          <span
+            class="inline-block bg-badge-yellow text-black text-xs font-bold px-2 py-1 rounded"
+          >
+            Learning
+          </span>
+
+          <p class="font-medium font-semibold text-xs mt-2">
+            Published 21 Dec 2023
+          </p>
+          <h1
+            class="text-gray-950 hover:text-badge-yellow hover:duration-200 cursor-pointer font-extrabold font-bold text-xl mb-4 mt-2"
+          >
+            HTML & CSS foundations
+          </h1>
+          <p class="font-light text-xs">
+            These languages are the backbone of every website, defining
+            structure, content, and presentation
+          </p>
+        </div>
+        <div class="flex items-center">
+          <img src="assets/images/image-avatar.webp" class="w-8 h-auto" />
+
+          <span class="ml-2 font-bold text-sm">Greg Hooper</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
