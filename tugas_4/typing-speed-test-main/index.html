@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+
+    <title>Frontend Mentor | Typing Speed Test</title>
+
+    <!-- Google Font - Sora -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sora: ["Sora", "sans-serif"],
+            },
+            colors: {
+              "neutral-900": "hsl(0, 0%, 7%)",
+              "neutral-800": "hsl(0, 0%, 15%)",
+              "neutral-500": "hsl(240, 3%, 46%)",
+              "neutral-400": "hsl(240, 1%, 59%)",
+              "neutral-0": "hsl(0, 0%, 100%)",
+              "blue-600": "hsl(214, 100%, 55%)",
+              "blue-400": "hsl(210, 100%, 65%)",
+              "red-500": "hsl(354, 63%, 57%)",
+              "green-500": "hsl(140, 63%, 57%)",
+              "yellow-400": "hsl(49, 85%, 70%)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Button Styles */
+      .difficulty-btn,
+      .mode-btn {
+        @apply px-4 py-2 rounded-lg border border-neutral-700 text-neutral-400 font-semibold transition-all hover:border-neutral-500;
+      }
+
+      .difficulty-btn.active,
+      .mode-btn.active {
+        @apply bg-blue-600 border-blue-600 text-neutral-0;
+      }
+
+      /* Typing Text Character States */
+      .char {
+        @apply relative;
+      }
+
+      .char.correct {
+        @apply text-green-500;
+      }
+
+      .char.incorrect {
+        @apply text-red-500 underline decoration-2;
+      }
+
+      .char.current {
+        @apply bg-neutral-700 bg-opacity-50;
+      }
+
+      /* Cursor Animation */
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .cursor {
+        @apply inline-block w-0.5 h-8 bg-blue-600 animate-pulse;
+        animation: blink 1s infinite;
+      }
+
+      /* Modal Animation */
+      .modal-enter {
+        animation: modalEnter 0.3s ease-out;
+      }
+
+      @keyframes modalEnter {
+        from {
+          opacity: 0;
+          transform: scale(0.9) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* Confetti Canvas */
+      #confettiCanvas {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-900 font-sora text-neutral-0 min-h-screen">
+    <!-- Main container -->
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+      <!--  Header -->
+      <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-8 sm:mb-12">
+        <!-- Icon -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <img src="assets/images/logo-large.svg" alt="Typing Speed Test" />
+        </div>
+
+        <!-- Personal best achieve -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <img
+            src="assets/images/icon-personal-best.svg"
+            alt="Throphy"
+            class="w-5 h-5 sm:w-6 sm:h-6"
+          />
+          <span class="text-sm sm:text-base text-neutral-400">
+            Personal best:
+            <span id="personalBest" class="text-neutral-0 font-semibold"
+              >0 WPM</span
+            >
+          </span>
+        </div>
+      </header>
+
+      <!-- Menu bar -->
+      <div class="flex items-center justify-between mb-4">
+        <!-- Stats bar -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mb-8 text-base sm:text-lg">
+          <div>
+            <span class="text-neutral-400">WPM:</span>
+            <span id="wpm" class="text-neutral-0 font-bold ml-2">0</span>
+          </div>
+
+          <div class="hidden sm:block border-l border-neutral-800 h-6"></div>
+
+          <div>
+            <span class="text-neutral-400">Accuracy:</span>
+            <span id="accuracy" class="text-neutral-0 font-bold ml-2">100%</span>
+          </div>
+
+          <div class="hidden sm:block border-l border-neutral-800 h-6"></div>
+
+          <div>
+            <span class="text-neutral-400">Time:</span>
+            <span id="time" class="text-neutral-0 font-bold ml-2">0:60</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4 mb-8">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <span class="text-neutral-400 text-sm sm:text-base">Difficulty:</span>
+            <div class="flex gap-2 w-full sm:w-auto">
+              <button
+                class="difficulty-btn active flex-1 sm:flex-initial"
+                data-difficulty="easy"
+              >
+                Easy
+              </button>
+              <button
+                class="difficulty-btn flex-1 sm:flex-initial"
+                data-difficulty="medium"
+              >
+                Medium
+              </button>
+              <button
+                class="difficulty-btn flex-1 sm:flex-initial"
+                data-difficulty="hard"
+              >
+                Hard
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <span class="text-neutral-400 text-sm sm:text-base">Mode:</span>
+            <div class="flex gap-2 w-full sm:w-auto">
+              <button
+                class="mode-btn active flex-1 sm:flex-initial"
+                data-mode="timed"
+              >
+                Timed (60s)
+              </button>
+              <button
+                class="mode-btn flex-1 sm:flex-initial"
+                data-mode="passage"
+              >
+                Passage
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passage Area -->
+      <div
+        id="passageContainer"
+        class="relative bg-neutral-800 rounded-lg p-4 sm:p-8 mb-6 min-h-[300px] sm:min-h-[400px]"
+      >
+        <!-- Typing text area -->
+        <div
+          id="passageText"
+          class="text-lg sm:text-2xl leading-relaxed text-neutral-500 select-none"
+        >
+         <!-- typing text  -->
+        </div>
+        <!-- Start button overlay  -->
+        <div
+          id="startOverlay"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-neutral-800 rounded-lg px-4"
+        >
+          <button
+            id="startBtn"
+            class="bg-blue-600 hover:bg-blue-400 text-neutral-0 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-colors mb-3 sm:mb-4 w-full sm:w-auto"
+          >
+            Start Typing Test
+          </button>
+          <p class="text-neutral-400 text-sm sm:text-base text-center">Or click the text and start typing</p>
+        </div>
+      </div>
+
+      <!-- Restart button (hidden initially) -->
+      <div class="text-center">
+        <button
+          id="restartBtn"
+          class="hidden bg-neutral-800 hover:bg-neutral-700 text-neutral-0 font-semibold px-6 py-3 rounded-lg transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            Restart Test
+            <img
+              src="assets/images/icon-restart.svg"
+              alt="Restart"
+              class="w-5 h-5"
+            />
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Results modal (hidden initially) -->
+    <div
+      id="resultsModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        class="bg-neutral-800 rounded-lg p-6 sm:p-12 max-w-md w-full text-center relative"
+      >
+        <!-- Success icon -->
+        <div class="mb-4 sm:mb-6 flex justify-center">
+          <div
+            class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-green-500 bg-opacity-20 flex items-center justify-center"
+          >
+            <div
+              class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500 bg-opacity-40 flex items-center justify-center"
+            >
+              <img
+                src="assets/images/icon-completed.svg"
+                alt="check"
+                class="w-6 h-6 sm:w-8 sm:h-8"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Result title -->
+        <h2 id="resultTitle" class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3">Test Complete!</h2>
+        <p id="resultSubtitle" class="text-neutral-400 text-sm sm:text-base mb-6 sm:mb-8 px-2">
+          Solid run. Keep pushing to beat your high score.
+        </p>
+
+        <!-- Stats -->
+        <div class="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+          <div class="border border-neutral-500 rounded-lg p-3 sm:p-4 text-left min-w-[140px]">
+            <div class="text-neutral-400 mb-1">WPM:</div>
+            <div id="resultWpm" class="text-2xl sm:text-3xl font-bold">0</div>
+          </div>
+          <div class="border border-neutral-500 rounded-lg p-3 sm:p-4 text-left min-w-[140px]">
+            <div class="text-neutral-400 mb-1">Accuracy:</div>
+            <div id="resultAccuracy" class="text-2xl sm:text-3xl font-bold">100%</div>
+          </div>
+          <div class="border border-neutral-500 rounded-lg p-3 sm:p-4 text-left min-w-[140px]">
+            <div class="text-neutral-400 mb-1">Characters:</div>
+            <div class="text-2xl sm:text-3xl font-bold">
+              <span id="resultCorrect" class="text-green-500">0</span>
+              <span class="text-neutral-500">/</span>
+              <span id="resultIncorrect" class="text-red-500">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action button -->
+        <button
+          id="closeResultsBtn"
+          class="bg-neutral-0 hover:bg-neutral-400 text-neutral-900 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-colors w-full flex items-center justify-center gap-2"
+        >
+          Beat This Score
+          <img
+            src="assets/images/icon-restart-black.svg"
+            alt="Restart"
+            class="w-4 h-4 sm:w-5 sm:h-5"
+          />
+        </button>
+      </div>
+    </div>
+
+    <!-- canvas for confetti -->
+    <canvas
+      id="confettiCanvas"
+      class="fixed inset-0 pointer-events-none z-40"
+    ></canvas>
+
+    <script src="app.js"></script>
+  </body>
+</html>
